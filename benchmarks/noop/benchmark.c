@@ -3,11 +3,11 @@
 #include "wizer.h"
 #include "sightglass.h"
 
-bool initialized = false;
+int initialized = 0;
 
 static void init_func()
 {
-    initialized = true;
+    initialized = 1;
 }
 
 WIZER_INIT(init_func);

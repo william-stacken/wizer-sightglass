@@ -1,14 +1,14 @@
-FROM rust:alpine3.17 AS builder
+FROM debian:bookworm AS builder
 WORKDIR /
 
-RUN apk update && apk add wget
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xz-utils wget
 
 RUN wget https://github.com/bytecodealliance/wizer/releases/download/v1.6.0/wizer-v1.6.0-x86_64-linux.tar.xz
 RUN tar xvf wizer-v1.6.0-x86_64-linux.tar.xz
 
-FROM rust:alpine3.17
+FROM debian:bookworm
 WORKDIR /
-COPY --from=builder /wizer-v1.6.0-x86_64-linux/wizer /usr/bin/wizer
+COPY --from=builder /wizer-v1.6.0-x86_64-linux/wizer /
 
 COPY benchmark.wasm .
-RUN wizer --allow-wasi --dir=. -o wizer.benchmark.wasm benchmark.wasm
+RUN /wizer --allow-wasi --dir=. -o wizer.benchmark.wasm benchmark.wasm
