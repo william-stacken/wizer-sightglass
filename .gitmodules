@@ -1,0 +1,3 @@
+[submodule "wizer"]
+	path = wizer
+	url = git@github.com:bytecodealliance/wizer.git

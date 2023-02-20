@@ -28,7 +28,9 @@ fi
 
 BENCHMARK_NAME=$(readlink -f $BENCHMARK_DIR | xargs basename)
 IMAGE_NAME=sightglass-benchmark-$BENCHMARK_NAME
+IMAGE_NAME_WIZER=$IMAGE_NAME-wizer
 TMP_BENCHMARK=$(mktemp /tmp/sightglass-benchmark-XXXXXX.wasm)
+TMP_BENCHMARK_WIZER=$(mktemp /tmp/sightglass-benchmark-XXXXXX.wizer.wasm)
 >&2 echo "Building $BENCHMARK_DIR"
 
 # Helpful logging function.
@@ -49,13 +51,20 @@ print_header "Build benchmark"
 CONTAINER_ID=$(set -x; docker create $IMAGE_NAME)
 (set -x; docker cp $CONTAINER_ID:/$FILENAME $TMP_BENCHMARK)
 
+print_header "Build wizened benchmark"
+(set -x; docker build -f Dockerfile.wizer --tag $IMAGE_NAME_WIZER - < $TMP_TAR)
+CONTAINER_ID_WIZER=$(set -x; docker create $IMAGE_NAME_WIZER)
+(set -x; docker cp $CONTAINER_ID_WIZER:/wizer.$FILENAME $TMP_BENCHMARK_WIZER)
+
 # Verify benchmark is a valid Sightglass benchmark.
 print_header "Verify benchmark"
 # From https://stackoverflow.com/a/246128:
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
 SIGHTGLASS_CARGO_TOML=$(dirname $SCRIPT_DIR)/Cargo.toml
 (set -x; cargo run --manifest-path $SIGHTGLASS_CARGO_TOML --quiet -- validate $TMP_BENCHMARK)
+(set -x; cargo run --manifest-path $SIGHTGLASS_CARGO_TOML --quiet -- validate $TMP_BENCHMARK_WIZER)
 (set -x; mv $TMP_BENCHMARK $BENCHMARK_DIR/$FILENAME)
+(set -x; mv $TMP_BENCHMARK_WIZER $BENCHMARK_DIR/wizer.$FILENAME)
 
 # Clean up.
 print_header "Clean up"

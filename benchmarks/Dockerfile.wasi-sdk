@@ -28,4 +28,5 @@ ENV PATH /wasi-sdk-12.0
 # Compile `benchmark.c` to `./benchmark.wasm`.
 COPY benchmark.c .
 COPY sightglass.h .
+COPY wizer.h .
 RUN $CC $CFLAGS benchmark.c -O3 -g -DNDEBUG -I. -o benchmark.wasm
