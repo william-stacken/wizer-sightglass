@@ -1,13 +1,15 @@
 
 #include <stdio.h>
+#include <stdbool.h>
+
 #include "wizer.h"
 #include "sightglass.h"
 
-int initialized = 0;
+bool initialized = false;
 
 static void init_func()
 {
-    initialized = 1;
+    initialized = true;
 }
 
 WIZER_INIT(init_func);
