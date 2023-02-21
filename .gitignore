@@ -3,6 +3,7 @@
 /target/
 benchmarks/**/*.ll
 benchmarks/**/*.o
+benchmarks/_results
 
 # Log files produced by running sightglass benchmarks.
 **/stdout-*-*-*.log

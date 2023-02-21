@@ -7,7 +7,7 @@
 #   randomize the list of benchmarks and pick a subset of them to build
 
 set -e
-PROJECT_DIR=$(dirname "$0" | xargs dirname | xargs realpath)
+PROJECT_DIR=$(cd "$(dirname "$0")" && pwd -P | xargs dirname)
 BENCHMARKS_DIR=$PROJECT_DIR/benchmarks
 BUILD_SCRIPT=$PROJECT_DIR/benchmarks/build.sh
 DOCKERFILES=$(find $BENCHMARKS_DIR -name Dockerfile)
