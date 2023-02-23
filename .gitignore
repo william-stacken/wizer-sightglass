@@ -4,6 +4,7 @@
 benchmarks/**/*.ll
 benchmarks/**/*.o
 benchmarks/_results
+/benchmarks/wasmtime
 
 # Log files produced by running sightglass benchmarks.
 **/stdout-*-*-*.log
