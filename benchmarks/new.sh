@@ -22,6 +22,7 @@ fi
 mkdir -p $BENCHMARK_DIR
 
 ln -s ../$DOCKERFILE $BENCHMARK_DIR/Dockerfile 2>/dev/null
+ln -s ../Dockerfile.wizer-wasi $BENCHMARK_DIR/Dockerfile.wizer 2>/dev/null
 ln -s ../../include/sightglass.h $BENCHMARK_DIR/sightglass.h 2>/dev/null
 ln -s ../../wizer/include/wizer.h $BENCHMARK_DIR/wizer.h 2>/dev/null
 touch $BENCHMARK_DIR/stderr.expected
