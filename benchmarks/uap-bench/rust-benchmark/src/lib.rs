@@ -25,7 +25,7 @@ struct UserAgentParserEntry {
 
 #[export_name = "wizer.initialize"]
 pub extern "C" fn init() {
-    let uap_yaml = include_str!("uap-core/regexes.yaml");
+    let uap_yaml = include_str!("../uap-core/regexes.yaml");
     let parsers: UserAgentParsers = serde_yaml::from_str(uap_yaml).unwrap();
     let regex_set = RegexSet::new(
         parsers
@@ -43,8 +43,10 @@ pub extern "C" fn init() {
 #[export_name = "run"]
 pub extern "C" fn run(ptr: *mut u8, len: usize) -> i32 {
     bench::start();
-    if UA_REGEX_SET.is_none() {
-        init();
+    unsafe {
+        if UA_REGEX_SET.is_none() {
+            init();
+        }
     }
     bench::end();
 

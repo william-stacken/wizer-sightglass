@@ -17,13 +17,8 @@ fi
 # If the filename is provided, use it.
 FILENAME=$2
 if [[ -z $FILENAME ]]; then
-    # Otherwise check the build dir for the default name.
-    if compgen -G "${BENCHMARK_DIR}/*.wasm" > /dev/null; then
-        FILENAME=$(ls $BENCHMARK_DIR/*.wasm  | xargs basename)
-    else
-        echo "Couldn't find the benchmark wasm filename in $BENCHMARK_DIR, please provide one."
-        exit 1
-    fi
+    # Otherwise assume the filename is "benchmark.wasm"
+    FILENAME=benchmark.wasm
 fi
 
 BENCHMARK_NAME=$(readlink -f $BENCHMARK_DIR | xargs basename)
@@ -58,6 +53,9 @@ SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && 
 SIGHTGLASS_CARGO_TOML=$(dirname $SCRIPT_DIR)/Cargo.toml
 (set -x; cargo run --manifest-path $SIGHTGLASS_CARGO_TOML --quiet -- validate $TMP_BENCHMARK)
 (set -x; mv $TMP_BENCHMARK $BENCHMARK_DIR/$FILENAME)
+# `tar` up the directory and `--dereference` (i.e., follow) all symlinks provided again now that
+# the baseline wasm has been built.
+(set -x; cd $BENCHMARK_DIR && tar --create --file $TMP_TAR --dereference --verbose .)
 
 print_header "Build wizened benchmark"
 (set -x; docker build -f Dockerfile.wizer --tag $IMAGE_NAME_WIZER - < $TMP_TAR)

@@ -2,5 +2,5 @@
 	path = wizer
 	url = git@github.com:bytecodealliance/wizer.git
 [submodule "benchmarks/uap-bench/uap-core"]
-	path = benchmarks/uap-bench/uap-core
+	path = benchmarks/uap-bench/rust-benchmark/uap-core
 	url = https://github.com/ua-parser/uap-core.git
