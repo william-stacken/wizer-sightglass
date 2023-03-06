@@ -5,6 +5,8 @@ benchmarks/**/*.ll
 benchmarks/**/*.o
 benchmarks/_results
 benchmarks/wasmtime
+benchmarks/**/rust-benchmark/target/
+benchmarks/**/rust-benchmark/Cargo.lock
 
 # Log files produced by running sightglass benchmarks.
 **/stdout-*-*-*.log

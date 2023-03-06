@@ -18,7 +18,7 @@ COPY --from=builder /binaryen-version_112/bin/wasm-opt /
 
 # Wizen the Wasm module
 COPY benchmark.wasm .
-RUN /wizer --allow-wasi --dir=. -o wizer.benchmark.wasm benchmark.wasm
+RUN WASMTIME_BACKTRACE_DETAILS=1 /wizer --allow-wasi --wasm-bulk-memory true --dir=. -o wizer.benchmark.wasm benchmark.wasm
 
 # Run wasm-opt on both Wasm modules
 RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm

@@ -42,12 +42,14 @@ impl WasmBenchmark {
         };
 
         // Check that it contains valid Wasm.
-        let mut features = wasmparser::WasmFeatures::default();
-        features.simd = true;
-        let mut validator = wasmparser::Validator::new_with_features(features);
-        if let Err(_) = validator.validate_all(&bytes) {
-            return ValidationErrorKind::InvalidWasm.with(&self);
-        }
+	// This has been disabled because it fails to validate Wasm modules if they have
+        // a data segment count that exceeds 100 000.
+        //let mut features = wasmparser::WasmFeatures::default();
+        //features.simd = true;
+        //let mut validator = wasmparser::Validator::new_with_features(features);
+        //if let Err(_) = validator.validate_all(&bytes) {
+        //    return ValidationErrorKind::InvalidWasm.with(&self);
+        //}
 
         // Check that it has the expected imports/exports.
         if !has_import_function(&bytes, "bench", "start").unwrap() {

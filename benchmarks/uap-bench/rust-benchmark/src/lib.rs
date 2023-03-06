@@ -1,4 +1,5 @@
 use regex::RegexSet;
+use regex::RegexSetBuilder;
 use serde::Deserialize;
 use sightglass_api as bench;
 
@@ -27,12 +28,13 @@ struct UserAgentParserEntry {
 pub extern "C" fn init() {
     let uap_yaml = include_str!("../uap-core/regexes.yaml");
     let parsers: UserAgentParsers = serde_yaml::from_str(uap_yaml).unwrap();
-    let regex_set = RegexSet::new(
+    let regex_set = RegexSetBuilder::new(
         parsers
             .user_agent_parsers
             .iter()
             .map(|e| e.regex.replace("\\/", "/").replace("\\!", "!")),
-    )
+    ).size_limit(20485760)
+    .build()
     .unwrap();
     unsafe {
         assert!(UA_REGEX_SET.is_none());

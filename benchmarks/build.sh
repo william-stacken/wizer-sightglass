@@ -60,12 +60,15 @@ SIGHTGLASS_CARGO_TOML=$(dirname $SCRIPT_DIR)/Cargo.toml
 print_header "Build wizened benchmark"
 (set -x; docker build -f Dockerfile.wizer --tag $IMAGE_NAME_WIZER - < $TMP_TAR)
 CONTAINER_ID_WIZER=$(set -x; docker create $IMAGE_NAME_WIZER)
+(set -x; docker cp $CONTAINER_ID_WIZER:/$FILENAME $TMP_BENCHMARK)
 (set -x; docker cp $CONTAINER_ID_WIZER:/wizer.$FILENAME $TMP_BENCHMARK_WIZER)
 
 # Verify wizened benchmark is a valid Sightglass benchmark.
 print_header "Verify wizened benchmark"
 (set -x; cargo run --manifest-path $SIGHTGLASS_CARGO_TOML --quiet -- validate $TMP_BENCHMARK_WIZER)
 (set -x; mv $TMP_BENCHMARK_WIZER $BENCHMARK_DIR/wizer.$FILENAME)
+(set -x; cargo run --manifest-path $SIGHTGLASS_CARGO_TOML --quiet -- validate $TMP_BENCHMARK)
+(set -x; mv $TMP_BENCHMARK $BENCHMARK_DIR/$FILENAME)
 
 # Clean up.
 print_header "Clean up"
