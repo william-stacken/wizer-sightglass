@@ -42,8 +42,14 @@ pub extern "C" fn init() {
     }
 }
 
+#[export_name = "_start"]
+pub extern "C" fn main() {
+    let ua = "Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0".as_bytes();
+    run(ua.as_ptr(), ua.len());
+}
+
 #[export_name = "run"]
-pub extern "C" fn run(ptr: *mut u8, len: usize) -> i32 {
+pub extern "C" fn run(ptr: *const u8, len: usize) -> i32 {
     bench::start();
     unsafe {
         if UA_REGEX_SET.is_none() {

@@ -113,8 +113,8 @@ pub enum ValidationErrorKind {
     DoesNotExist,
     #[error("cannot read the file")]
     Unreadable,
-    #[error("the file is not a valid Wasm module")]
-    InvalidWasm,
+//    #[error("the file is not a valid Wasm module")]
+//    InvalidWasm,
     #[error("the Wasm module is missing an import: {0}")]
     MissingImport(&'static str),
 }

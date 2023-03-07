@@ -134,7 +134,7 @@ for BENCH_FILE in $(find . -name benchmark.wasm); do
     # Produce raw and summarized results for the baseline
     rm -f "$TMP_RESULT"
     TMP_RESULT=$(mktemp /tmp/sightglass-benchmark-$RESULT_NAME-XXXXXX)
-    $SIGHTGLASS benchmark $SIGHTGLASS_OPTIONS --working-dir $BENCH_DIR $BENCH_FILE 2>/dev/null | \
+    $SIGHTGLASS benchmark $SIGHTGLASS_OPTIONS --working-dir $BENCH_DIR $BENCH_FILE | \
         # Prettify CSV
         sed -e 's/\.\///g' -e 's/\/benchmark\.wasm//g' | \
         # Tee raw results to file
@@ -143,7 +143,7 @@ for BENCH_FILE in $(find . -name benchmark.wasm); do
         $SIGHTGLASS summarize -i csv -o csv > $TMP_RESULT
 
     # Produce raw and summarized results for the optimization
-    $SIGHTGLASS benchmark $SIGHTGLASS_OPTIONS --working-dir $BENCH_DIR $BENCH_FILE_WIZER 2>/dev/null | \
+    $SIGHTGLASS benchmark $SIGHTGLASS_OPTIONS --working-dir $BENCH_DIR $BENCH_FILE_WIZER | \
         # Prettify CSV
         sed -e 's/\.\///g' -e 's/\/wizer\.benchmark\.wasm//g' | \
         # Tee raw results to file
