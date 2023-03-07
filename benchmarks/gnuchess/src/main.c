@@ -32,6 +32,9 @@
 #include "common.h"
 #include <time.h>
 
+#include "wizer.h"
+#include "sightglass.h"
+
 int distance[64][64];
 int taxicab[64][64];
 int lzArray[65536];
@@ -279,6 +282,17 @@ int rank6[2] = { 5, 2 };
 int rank7[2] = { 6, 1 };
 int rank8[2] = { 7, 0 };
 
+static int _is_initialized = 0;
+static void init_func()
+{
+  if (!_is_initialized) {
+    Initialize();
+  }
+  _is_initialized = 1;
+}
+
+WIZER_INIT(init_func);
+
 
 int main (int argc, char *argv[])
 {
@@ -310,7 +324,9 @@ int main (int argc, char *argv[])
   if (!(flags & XBOARD))
     SET (flags, POST);
   ShowVersion ();
-  Initialize ();
+  bench_start();
+  init_func();
+  bench_end();
 
   if (argc > 1) {
     for (i = 0; i < argc; i++) {
