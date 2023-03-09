@@ -22,12 +22,12 @@ set key left top
 
 do for [i=1:words(targets)] {
     target = sprintf("%s/%s", result_folder, word(targets, i))
-    bestfit(x) = a + b*x
+    bestfit(x) = b*x
 
     set output target.'.png'
 
-    fit bestfit(x) target.'.csv' using 9:14 via a, b
+    fit bestfit(x) target.'.csv' using 9:14 via b
     plot target.'.csv' using 9:14:10:15 with xyerrorbars title word(titles, i), \
-        bestfit(x) title sprintf("%fx + %f", b, a), \
+        bestfit(x) title sprintf("%fx", b), \
         x notitle dashtype 2 linetype 1 linecolor rgb "#999999"
 }

@@ -286,6 +286,9 @@ static int _is_initialized = 0;
 static void init_func()
 {
   if (!_is_initialized) {
+    /* initialize control flags */
+    flags = ULL(0);
+    SET (flags, XBOARD);
     Initialize();
   }
   _is_initialized = 1;
@@ -300,12 +303,11 @@ int main (int argc, char *argv[])
   time_t now; 
   int i;
 
+  bench_start();
+
   /* Initialize random number generator */
   time(&now);
   srand((unsigned) now);
-  
-  /* initialize control flags */
-  flags = ULL(0);
 
   /* output for thinking */
   ofp = stdout;
@@ -320,13 +322,14 @@ int main (int argc, char *argv[])
 	compilebook++;
     }
   }
-  
+
   if (!(flags & XBOARD))
     SET (flags, POST);
-  ShowVersion ();
-  bench_start();
   init_func();
+  ShowVersion ();
   bench_end();
+
+  return (0);
 
   if (argc > 1) {
     for (i = 0; i < argc; i++) {

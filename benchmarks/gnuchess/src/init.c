@@ -781,9 +781,10 @@ void InitHashTable ()
       exit(EXIT_FAILURE);
    } else {
       size = (PAWNSLOTS * 2 * sizeof (PawnSlot)) >> 10;
-      if (!(flags & XBOARD))
-	printf ("Pawn hash table: Entries=%dK Size=%uK\n",
-		PAWNSLOTS >> 10, size);
+      if (!(flags & XBOARD)) {
+        printf ("Pawn hash table: Entries=%dK Size=%uK\n",
+                 PAWNSLOTS >> 10, size);
+      }
    }
 }
 

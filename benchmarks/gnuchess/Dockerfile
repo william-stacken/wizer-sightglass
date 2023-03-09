@@ -21,10 +21,12 @@ COPY --from=builder /wasi-sdk-12.0 /wasi-sdk-12.0/
 ENV CC=/wasi-sdk-12.0/bin/clang
 ENV CXX=/wasi-sdk-12.0/bin/clang++
 ENV LD=/wasi-sdk-12.0/bin/lld
-ENV CFLAGS=--sysroot=/wasi-sdk-12.0/share/wasi-sysroot
+ENV CFLAGS="--sysroot=/wasi-sdk-12.0/share/wasi-sysroot -D_WASI_EMULATED_SIGNAL"
 ENV CXXFLAGS=--sysroot=/wasi-sdk-12.0/share/wasi-sysroot
 ENV PATH /wasi-sdk-12.0
 
 # Compile `benchmark.c` to `./benchmark.wasm`.
 COPY src/ .
-RUN $CC $CFLAGS src/*.c -O3 -g -DNDEBUG -Isrc -o benchmark.wasm
+COPY sightglass.h .
+COPY wizer.h .
+RUN $CC $CFLAGS $(/bin/ls *.c) -O3 -g -DNDEBUG -lwasi-emulated-signal -I. -o benchmark.wasm
