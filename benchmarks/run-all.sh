@@ -95,7 +95,7 @@ RESULT_DIR=$RESULT_ROOT_DIR/$RESULT_TIME
 SIGHTGLASS="cargo +nightly run --bin sightglass-cli --"
 ENGINE=./wasmtime
 #SIGHTGLASS_OPTIONS="--engine $ENGINE -m perf-counters --raw --output-format csv"
-SIGHTGLASS_OPTIONS="--engine $ENGINE --raw --output-format csv"
+SIGHTGLASS_OPTIONS="--processes 1 --iterations-per-process 10 --engine $ENGINE --raw --output-format csv"
 export RUST_LOG=debug
 
 # If an engine is not available, build it.

@@ -9,7 +9,7 @@ set datafile separator ","
 set fit logfile '/dev/null'
 
 set xlabel "CPU Cycles (Baseline)"
-set ylabel "CPU Cycles (Optimized)"
+set ylabel "CPU Cycles (Pre-initialized)"
 set xrange [0:]
 set yrange [0:]
 set key left top
@@ -30,8 +30,8 @@ do for [i=1:words(targets)] {
     set output target.'.png'
 
     fit bestfit(x) target.'.csv' using 9:14 via b
-    plot target_csv using 9:14:10:15 with xyerrorbars title word(titles, i), \
-        '' using 9:14:3 with labels offset 0,2 notitle, \
-        bestfit(x) title sprintf("%fx", b) dashtype 2 linetype 1 linecolor rgb "#FF0000", \
-        x notitle dashtype 2 linetype 1 linecolor rgb "#999999"
+    plot x notitle linecolor rgb "#DDDDDD", \
+        bestfit(x) title sprintf("%fx", b) dashtype 2 linetype 1 linecolor rgb "#4444DD", \
+        target_csv using 9:14:10:15 with xyerrorbars title word(titles, i), \
+        '' using 9:14:3 with labels offset 0,2 notitle
 }
