@@ -2,9 +2,9 @@
 
 result_folder = "_results/latest"
 targets = "__compilation __instantiation __execution __full_compilation __full_instantiation"
-titles = "Compilation Instantiation Execution \"TTI from Compilation\" \"TTI from Instantiation\""
+titles = "Compilation Instantiation Execution \"CPTI from Compilation\" \"CPTI from Instantiation\""
 
-set terminal pngcairo dashed
+set terminal pngcairo dashed noenhanced
 set datafile separator ","
 set fit logfile '/dev/null'
 
