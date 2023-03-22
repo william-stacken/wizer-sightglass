@@ -55,8 +55,9 @@ JS::PersistentRootedObject GLOBAL;
 static JS::PersistentRootedObjectVector* FETCH_HANDLERS;
 
 bool init_js() {
+printf("1\n");
   JS_Init();
-
+printf("2\n");
   JSContext *cx = JS_NewContext(JS::DefaultHeapMaxBytes);
   if (!cx)
       return false;
@@ -68,7 +69,7 @@ bool init_js() {
     .setPrivateClassMethods(true)
     .setClassStaticBlocks(true)
     .setErgnomicBrandChecks(true);*/
-
+printf("3\n");
   JS::RealmOptions options;
   options.creationOptions()
     .setStreamsEnabled(true)
@@ -78,17 +79,17 @@ bool init_js() {
     .setWritableStreamsEnabled(true)
     .setIteratorHelpersEnabled(true)
     .setWeakRefsEnabled(JS::WeakRefSpecifier::EnabledWithoutCleanupSome);
-
+printf("4\n");
   RootedObject global(cx, JS_NewGlobalObject(cx, &global_class, nullptr, JS::FireOnNewGlobalHook,
                                              options));
   if (!global)
       return false;
-
+printf("5\n");
   JSAutoRealm ar(cx, global);
   if (!JS::InitRealmStandardClasses(cx))
     return false;
 
-
+printf("6\n");
   CONTEXT = cx;
   GLOBAL.init(cx, global);
 
@@ -96,7 +97,7 @@ bool init_js() {
   if (!markedSrcBuf.init(cx, (const char*) js_marked_min_js, js_marked_min_js_len, JS::SourceOwnership::Borrowed)) {
     return false;
   }
-
+printf("7\n");
   JS::SourceText<mozilla::Utf8Unit> mainSrcBuf;
   if (!mainSrcBuf.init(cx, (const char*) js_main_js, js_main_js_len, JS::SourceOwnership::Borrowed)) {
     return false;
@@ -107,6 +108,7 @@ bool init_js() {
   // Note that we do this outside of `bench_{start,end}` because this stuff will
   // typically get Wizer'd away from what is the actual hot path for JS
   // execution.
+printf("8\n");
   JS::CompileOptions markedOpts(cx);
   markedOpts.setForceFullParse();
   markedOpts.setFileAndLine("marked.min.js", 1);
@@ -118,7 +120,7 @@ bool init_js() {
   if (!JS_ExecuteScript(cx, markedScript, &result)) {
     return false;
   }
-
+printf("9\n");
   // Similarly for `main.js`.
   JS::CompileOptions mainOpts(cx);
   mainOpts.setForceFullParse();
@@ -190,9 +192,9 @@ int main(int argc, const char *argv[]) {
     init_js();
   }
   bench_end();
-
+printf("reading file\n");
   char* markdownInput = readFile("default.input.md");
-
+printf("read file\n");
   JSContext* cx = CONTEXT;
   RootedObject global(cx, GLOBAL);
   JSAutoRealm ar(cx, global);
