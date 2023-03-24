@@ -19,7 +19,7 @@ RUN git clone https://github.com/fastly/spidermonkey-wasi-embedding
 WORKDIR /usr/src/spidermonkey-wasi-embedding
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y install libxml2-dev m4
-RUN ./build-engine.sh debug
+RUN ./build-engine.sh && ./build-engine.sh debug
 
 WORKDIR /usr/src
 
