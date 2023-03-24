@@ -24,3 +24,4 @@ RUN scripts/install_in_renpy.sh
 #COPY wizer.h .
 #RUN emcc benchmark.c -O3 -g -DNDEBUG -I. -o benchmark.wasm
 # We output the Wasm file to /benchmark.wasm, where the client expects it.
+
