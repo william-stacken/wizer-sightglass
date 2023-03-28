@@ -17,9 +17,12 @@ COPY --from=builder /wizer-v1.6.0-x86_64-linux/wizer /
 COPY --from=builder /binaryen-version_112/bin/wasm-opt /
 
 # Wizen the Wasm module
+RUN mkdir js
+COPY js/marked.min.js js/marked.min.js
+COPY js/main.js js/main.js
 COPY benchmark.wasm .
 RUN WASMTIME_BACKTRACE_DETAILS=1 /wizer --allow-wasi -r _start=wizer.resume --wasm-bulk-memory true --dir=. -o wizer.benchmark.wasm benchmark.wasm
 
 # Run wasm-opt on both Wasm modules
-#RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
-#RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm
+RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
+RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm

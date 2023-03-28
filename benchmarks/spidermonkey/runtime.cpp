@@ -55,21 +55,21 @@ JS::PersistentRootedObject GLOBAL;
 static JS::PersistentRootedObjectVector* FETCH_HANDLERS;
 
 bool init_js() {
-printf("1\n");
   JS_Init();
-printf("2\n");
+
   JSContext *cx = JS_NewContext(JS::DefaultHeapMaxBytes);
   if (!cx)
       return false;
   if (!js::UseInternalJobQueues(cx) || !JS::InitSelfHostedCode(cx))
       return false;
 
+  // TODO Comment out because it does not compile...
   /*JS::ContextOptionsRef(cx)
     .setPrivateClassFields(true)
     .setPrivateClassMethods(true)
     .setClassStaticBlocks(true)
     .setErgnomicBrandChecks(true);*/
-printf("3\n");
+
   JS::RealmOptions options;
   options.creationOptions()
     .setStreamsEnabled(true)
@@ -79,17 +79,16 @@ printf("3\n");
     .setWritableStreamsEnabled(true)
     .setIteratorHelpersEnabled(true)
     .setWeakRefsEnabled(JS::WeakRefSpecifier::EnabledWithoutCleanupSome);
-printf("4\n");
+
   RootedObject global(cx, JS_NewGlobalObject(cx, &global_class, nullptr, JS::FireOnNewGlobalHook,
                                              options));
   if (!global)
       return false;
-printf("5\n");
+
   JSAutoRealm ar(cx, global);
   if (!JS::InitRealmStandardClasses(cx))
     return false;
 
-printf("6\n");
   CONTEXT = cx;
   GLOBAL.init(cx, global);
 
@@ -97,7 +96,7 @@ printf("6\n");
   if (!markedSrcBuf.init(cx, (const char*) js_marked_min_js, js_marked_min_js_len, JS::SourceOwnership::Borrowed)) {
     return false;
   }
-printf("7\n");
+
   JS::SourceText<mozilla::Utf8Unit> mainSrcBuf;
   if (!mainSrcBuf.init(cx, (const char*) js_main_js, js_main_js_len, JS::SourceOwnership::Borrowed)) {
     return false;
@@ -108,7 +107,6 @@ printf("7\n");
   // Note that we do this outside of `bench_{start,end}` because this stuff will
   // typically get Wizer'd away from what is the actual hot path for JS
   // execution.
-printf("8\n");
   JS::CompileOptions markedOpts(cx);
   markedOpts.setForceFullParse();
   markedOpts.setFileAndLine("marked.min.js", 1);
@@ -120,7 +118,6 @@ printf("8\n");
   if (!JS_ExecuteScript(cx, markedScript, &result)) {
     return false;
   }
-printf("9\n");
   // Similarly for `main.js`.
   JS::CompileOptions mainOpts(cx);
   mainOpts.setForceFullParse();
@@ -151,11 +148,10 @@ bool eval_bench(JSContext* cx,
 
   // Run `main(markdownInput)`. Do this within `bench_{start,end}` since this
   // would be the actual JS hot path after Wizening.
-  //bench_start();
+  // Original calls to bench_start and bench_end removed...
   if (!JS_CallFunctionName(cx, global, "main", JS::HandleValueArray(arg), &result)) {
     return false;
   }
-  //bench_end();
 
   JS::RootedString resultStr(cx, result.toString());
   JS::AutoAssertNoGC nogc(cx);
@@ -185,16 +181,10 @@ char* readFile(const char* path) {
   return contents;
 }
 
-int main(int argc, const char *argv[]) {
-
-  bench_start();
-  if (CONTEXT == nullptr) {
-    init_js();
-  }
-  bench_end();
-printf("reading file\n");
+void parse_md()
+{
   char* markdownInput = readFile("default.input.md");
-printf("read file\n");
+
   JSContext* cx = CONTEXT;
   RootedObject global(cx, GLOBAL);
   JSAutoRealm ar(cx, global);
@@ -218,4 +208,20 @@ printf("read file\n");
   }
 
   printf("All done!\n");
+}
+
+int main(int argc, const char *argv[]) {
+
+  bench_start();
+  if (CONTEXT == nullptr) {
+    __wasm_call_ctors();
+    init_js();
+    parse_md();
+    bench_end();
+    __wasm_call_dtors();
+  } else {
+    parse_md();
+    bench_end();
+  }
+
 }

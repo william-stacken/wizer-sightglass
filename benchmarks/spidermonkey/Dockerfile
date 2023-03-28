@@ -18,7 +18,6 @@ RUN apt-get update && apt-get -y install xxd libxml2-dev m4
 WORKDIR /usr/src
 RUN git clone https://github.com/fastly/spidermonkey-wasi-embedding
 WORKDIR /usr/src/spidermonkey-wasi-embedding
-RUN sh -c "echo 09c7bf1e7f9a87830f1f0568e82a012526cea1b7 > gecko-revision && echo 'https://github.com/william-stacken/gecko-dev' > gecko-repository"
 RUN ./build-engine.sh
 
 WORKDIR /usr/src

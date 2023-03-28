@@ -546,6 +546,7 @@ enum {
 
 /*  The command routines */
 void InputCmd (void);
+void InputCmdFromFile (FILE * input);
 void ShowCmd (char *);
 void TestCmd (char *);
 

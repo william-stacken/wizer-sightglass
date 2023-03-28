@@ -59,6 +59,11 @@ static char cmd[INPUT_SIZE], file[INPUT_SIZE],
 char subcmd[INPUT_SIZE],setting[INPUT_SIZE],subsetting[INPUT_SIZE];
 
 void InputCmd ()
+{
+  InputCmdFromFile (stdin);
+}
+
+void InputCmdFromFile (FILE * input)
 /*************************************************************************
  *
  *  This is the main user command interface driver.
@@ -97,7 +102,7 @@ void InputCmd ()
 	       perror("InputCmd");
 	       exit(EXIT_FAILURE);
 	    }
-	    fgets(inputstr, INPUT_SIZE, stdin);
+	    fgets(inputstr, INPUT_SIZE, input);
 	    if (inputstr[0]) {
 	       inputstr[strlen(inputstr)-1] = 0;
 	    }
@@ -107,7 +112,7 @@ void InputCmd ()
 	  printf ("%s (%d) %c ", color[board.side], (GameCnt+1)/2 + 1, prompt);
 	  fflush(stdout);
         }
-	fgets (inputstr, INPUT_SIZE, stdin) ;
+	fgets (inputstr, INPUT_SIZE, input) ;
 #endif /* HAVE_LIBREADLINE */
 
 	cmd[0] = '\n';

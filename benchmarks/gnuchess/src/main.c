@@ -297,13 +297,11 @@ static void init_func()
 WIZER_INIT(init_func);
 
 
-int main (int argc, char *argv[])
+int main_real (int argc, char *argv[])
 {
   int compilebook = 0;
   time_t now; 
   int i;
-
-  bench_start();
 
   /* Initialize random number generator */
   time(&now);
@@ -327,10 +325,13 @@ int main (int argc, char *argv[])
     SET (flags, POST);
   init_func();
   ShowVersion ();
-  bench_end();
 
   return (0);
+}
 
+int game_start(int argc, char *argv[])
+{
+  int i;
   if (argc > 1) {
     for (i = 0; i < argc; i++) {
       if (strcmp(argv[i],"xboard") == 0) {
@@ -343,10 +344,11 @@ int main (int argc, char *argv[])
 
   bookmode = BOOKPREFER;
   bookfirstlast = 3;
+  FILE* input = fopen("input", "r");
 
    while (!(flags & QUIT))
    {
-      InputCmd (); 
+      InputCmdFromFile (input);
       if ((flags & THINK) && !(flags & MANUAL) && !(flags & ENDED)) {
         
       if (!(flags & XBOARD)) printf("Thinking...\n");
@@ -355,9 +357,26 @@ int main (int argc, char *argv[])
    }
 
    /*  Some cleaning up  */
+   fclose(input);
    free (HashTab[0]);
    free (HashTab[1]);
    free (PawnTab[0]);
    free (PawnTab[1]);
    return (0);
+}
+
+int main(int argc, char *argv[])
+{
+    bench_start();
+    if (!_is_initialized) {
+        __wasm_call_ctors();
+        main_real(argc, argv);
+        bench_end();
+        game_start(argc, argv);
+        __wasm_call_dtors();
+    } else {
+        main_real(argc, argv);
+        bench_end();
+        game_start(argc, argv);
+    }
 }
