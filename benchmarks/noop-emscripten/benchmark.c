@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifdef __EMSCRIPTEN__
+static void __wasm_call_dtors() {}
+#endif
+
 #include "wizer.h"
 #include "sightglass.h"
 
@@ -9,6 +13,8 @@ bool initialized = false;
 
 static void init_func()
 {
+    for (int i = 0; i < 100000000; i++);
+
     initialized = true;
 }
 
