@@ -13,3 +13,6 @@ benchmarks/**/rust-benchmark/Cargo.lock
 # Log files produced by running sightglass benchmarks.
 **/stdout-*-*-*.log
 **/stderr-*-*-*.log
+
+benchmarks/renpy/CubismSdkForNative-4-r.6.2*
+benchmarks/renpy/Live2DCubismCore.h
