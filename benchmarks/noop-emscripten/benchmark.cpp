@@ -2,19 +2,37 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#ifdef __EMSCRIPTEN__
-static void __wasm_call_dtors() {}
-#endif
+//#ifdef __EMSCRIPTEN__
+//static void __wasm_call_dtors() {}
+//#endif
 
 #include "wizer.h"
 #include "sightglass.h"
 
+class Test {
+  public:
+    Test() : value(1) {
+        printf(
+            "global constructor (should be the first printed line)\n");
+    }
+    ~Test() {
+        printf("global destructor (should be the last printed line)\n");
+    }
+    int value;
+};
+
 bool initialized = false;
+int orig_value = 0;
+Test t;
 
 static void init_func()
 {
+    printf("Initializing...\n");
+    orig_value = t.value;
+    t.value = 2;
     initialized = true;
 }
+
 
 WIZER_INIT(init_func);
 

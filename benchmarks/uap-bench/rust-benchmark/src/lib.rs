@@ -45,7 +45,7 @@ pub extern "C" fn init() {
 #[export_name = "_start"]
 pub extern "C" fn main() {
     let ua = "Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0".as_bytes();
-    run(ua.as_ptr(), ua.len());
+    println!("{}", run(ua.as_ptr(), ua.len()));
 }
 
 #[export_name = "run"]

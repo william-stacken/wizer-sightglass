@@ -9,7 +9,7 @@ RUN tar xvf wizer-v1.6.0-x86_64-linux.tar.xz
 RUN wget https://github.com/WebAssembly/binaryen/releases/download/version_112/binaryen-version_112-x86_64-linux.tar.gz
 RUN tar xvf binaryen-version_112-x86_64-linux.tar.gz
 
-FROM debian:bookworm
+FROM --platform=linux/amd64 debian:bookworm
 WORKDIR /
 
 # Copy the binaries from the builder container
@@ -17,9 +17,9 @@ COPY --from=builder /wizer-v1.6.0-x86_64-linux/wizer /
 COPY --from=builder /binaryen-version_112/bin/wasm-opt /
 
 # Wizen the Wasm module
-COPY benchmark.wasm .
+COPY ./* .
 RUN WASMTIME_BACKTRACE_DETAILS=1 /wizer --allow-wasi -r _start=wizer.resume --wasm-bulk-memory true --dir=. -o wizer.benchmark.wasm benchmark.wasm
 
 # Run wasm-opt on both Wasm modules
-RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
-RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm
+#RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
+#RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm
