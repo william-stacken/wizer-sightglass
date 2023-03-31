@@ -10,8 +10,9 @@ static mut NN_CONTEXT: Option<wasi_nn::GraphExecutionContext> = None;
 
 #[export_name = "wizer.initialize"]
 pub extern "C" fn init() {
-    let xml = fs::read_to_string("./mobilenet.xml").unwrap();
+    
     let weights = fs::read("./mobilenet.bin").unwrap();
+    let xml = fs::read_to_string("./mobilenet.xml").unwrap();
 
     let graph = unsafe {
         wasi_nn::load(
