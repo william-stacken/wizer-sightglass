@@ -13,6 +13,7 @@ use std::{
     process::Stdio,
 };
 use structopt::StructOpt;
+use std::io::Read;
 
 /// Measure compilation, instantiation, and execution of a Wasm file.
 ///
@@ -238,13 +239,22 @@ impl BenchmarkCommand {
 
         let stdout_expected = wasm_file_dir.join("stdout.expected");
         if stdout_expected.exists() {
-            let stdout_expected_data = std::fs::read_to_string(&stdout_expected)
-                .with_context(|| format!("failed to read `{}`", stdout_expected.display()))?;
-            let stdout_actual_data = std::fs::read_to_string(stdout)
-                .with_context(|| format!("failed to read `{}`", stdout.display()))?;
-            // Compare lines so that we ignore `\n` on *nix vs `\r\n` on Windows.
-            let stdout_expected_data = stdout_expected_data.lines().collect::<Vec<_>>();
-            let stdout_actual_data = stdout_actual_data.lines().collect::<Vec<_>>();
+            let mut stdout_expected_data = vec![];
+            Box::new(io::BufReader::new(
+                fs::File::open(&stdout_expected).context(format!("failed to open `{}`", stdout_expected.display()))?
+            )).read_to_end(&mut stdout_expected_data)
+              .with_context(|| format!("failed to read `{}`", stdout_expected.display()))?;
+
+            let mut stdout_actual_data = vec![];
+            Box::new(io::BufReader::new(
+                fs::File::open(&stdout).context(format!("failed to open `{}`", stdout.display()))?
+            )).read_to_end(&mut stdout_actual_data)
+              .with_context(|| format!("failed to read `{}`", stdout.display()))?;
+
+            // TODO Compare lines so that we ignore `\n` on *nix vs `\r\n` on Windows,
+            // but not if the output is binary
+            //let stdout_expected_data = stdout_expected_data.lines().collect::<Vec<_>>();
+            //let stdout_actual_data = stdout_actual_data.lines().collect::<Vec<_>>();
             anyhow::ensure!(
                 stdout_expected_data == stdout_actual_data,
                 "Actual `stdout` does not match the expected `stdout`!\n\
@@ -264,13 +274,22 @@ impl BenchmarkCommand {
 
         let stderr_expected = wasm_file_dir.join("stderr.expected");
         if stderr_expected.exists() {
-            let stderr_expected_data = std::fs::read_to_string(&stderr_expected)
-                .with_context(|| format!("failed to read `{}`", stderr_expected.display()))?;
-            let stderr_actual_data = std::fs::read_to_string(stderr)
-                .with_context(|| format!("failed to read `{}`", stderr.display()))?;
-            // Compare lines so that we ignore `\n` on *nix vs `\r\n` on Windows.
-            let stderr_expected_data = stderr_expected_data.lines().collect::<Vec<_>>();
-            let stderr_actual_data = stderr_actual_data.lines().collect::<Vec<_>>();
+            let mut stderr_expected_data = vec![];
+            Box::new(io::BufReader::new(
+                fs::File::open(&stderr_expected).context(format!("failed to open `{}`", stderr_expected.display()))?
+            )).read_to_end(&mut stderr_expected_data)
+              .with_context(|| format!("failed to read `{}`", stderr_expected.display()))?;
+
+            let mut stderr_actual_data = vec![];
+            Box::new(io::BufReader::new(
+                fs::File::open(&stderr).context(format!("failed to open `{}`", stderr.display()))?
+            )).read_to_end(&mut stderr_actual_data)
+              .with_context(|| format!("failed to read `{}`", stderr.display()))?;
+
+            // TODO Compare lines so that we ignore `\n` on *nix vs `\r\n` on Windows,
+            // but not if the output is binary
+            //let stderr_expected_data = stderr_expected_data.lines().collect::<Vec<_>>();
+            //let stderr_actual_data = stderr_actual_data.lines().collect::<Vec<_>>();
             anyhow::ensure!(
                 stderr_expected_data == stderr_actual_data,
                 "Actual `stderr` does not match the expected `stderr`!\n\
