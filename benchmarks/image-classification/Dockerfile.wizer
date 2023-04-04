@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64  rust:1.54 AS builder
+FROM rust:1.54 AS builder
 WORKDIR /
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xz-utils wget
@@ -15,7 +15,7 @@ RUN wget https://github.com/WebAssembly/binaryen/releases/download/version_112/b
 RUN tar xvf binaryen-version_112-x86_64-linux.tar.gz
 
 # Using bullseye because openvino setup script requires python between versions 3.6 and 3.9
-FROM --platform=linux/amd64 debian:bullseye
+FROM debian:bullseye
 WORKDIR /
 
 # Copy the binaries from the builder container
@@ -26,8 +26,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y python3
 
 # Wizen the Wasm module
 COPY . /
-RUN bash -c "source openvino/setupvars.sh && RUST_BACKTRACE=full WASMTIME_BACKTRACE_DETAILS=1 /wizer -r _start=wizer.resume --wasm-bulk-memory true --dir=. -o wizer.benchmark.wasm benchmark.wasm"
+RUN bash -c "source openvino/setupvars.sh && RUST_BACKTRACE=full WASMTIME_BACKTRACE_DETAILS=1 /wizer --wasm-bulk-memory true --dir=. -o wizer.benchmark.wasm benchmark.wasm"
 
 # Run wasm-opt on both Wasm modules
-RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
-RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm
+#RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
+#RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm

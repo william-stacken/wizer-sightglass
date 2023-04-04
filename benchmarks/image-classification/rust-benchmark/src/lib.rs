@@ -6,17 +6,38 @@ use std::fs;
 use wasi_nn;
 mod imagenet_classes;
 
-static mut NN_CONTEXT: Option<wasi_nn::GraphExecutionContext> = None;
+static mut _IS_INITIALIZED: bool = false;
+static mut WEIGHTS: Vec<u8> = vec![];
+static mut XML: Vec<u8> = vec![];
 
 #[export_name = "wizer.initialize"]
 pub extern "C" fn init() {
-    
-    let weights = fs::read("./mobilenet.bin").unwrap();
-    let xml = fs::read_to_string("./mobilenet.xml").unwrap();
+    unsafe {
+        WEIGHTS = fs::read("./mobilenet.bin").unwrap();
+        XML = fs::read_to_string("./mobilenet.xml").unwrap().into_bytes();
+        _IS_INITIALIZED = true;
+    }
+}
 
+#[export_name = "_start"]
+pub extern "C" fn main() {
+    bench::start();
+    let context: wasi_nn::GraphExecutionContext;
+    unsafe {
+        if !_IS_INITIALIZED {
+            init();
+        }
+    }
+
+    // Initializing the wasi-nn execution context is included in the initialization time,
+    // but has been left out of the wizer.initialize function. The reason for this
+    // is that the current implementation of the wasi-nn API in the wasmtime-wasi-nn crate
+    // keeps the graph and execution context state on the host, meaning it is all lost
+    // in the pre-initialized module after Wizer terminates. Not sure if there is a reason
+    // for this or if the state could be kept on the guest without breaking the wasi-nn API.
     let graph = unsafe {
         wasi_nn::load(
-            &[&xml.into_bytes(), &weights],
+            &[&XML, &WEIGHTS],
             wasi_nn::GRAPH_ENCODING_OPENVINO,
             wasi_nn::EXECUTION_TARGET_CPU,
         )
@@ -24,21 +45,8 @@ pub extern "C" fn init() {
     };
 
     unsafe { 
-        assert!(NN_CONTEXT.is_none());
-        NN_CONTEXT = Some(wasi_nn::init_execution_context(graph).unwrap())
+        context = wasi_nn::init_execution_context(graph).unwrap();
     };
-}
-
-#[export_name = "_start"]
-pub extern "C" fn main() {
-    bench::start();
-    let context;
-    unsafe {
-        if NN_CONTEXT.is_none() {
-            init();
-        }
-        context = *NN_CONTEXT.as_ref().unwrap();
-    }
     bench::end();
     let tensor_data = image_to_tensor("test.jpg".to_string(), 224, 224);
     let tensor = wasi_nn::Tensor {
