@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+// Emscripten does not define __wasm_call_dtors, so it is stubed out here
 #ifdef __EMSCRIPTEN__
 static void __wasm_call_dtors() {}
 #endif
