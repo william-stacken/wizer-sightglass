@@ -29,5 +29,5 @@ COPY . /
 RUN bash -c "source openvino/setupvars.sh && RUST_BACKTRACE=full WASMTIME_BACKTRACE_DETAILS=1 /wizer --wasm-bulk-memory true --dir=. -o wizer.benchmark.wasm benchmark.wasm"
 
 # Run wasm-opt on both Wasm modules
-#RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
-#RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm
+RUN /wasm-opt benchmark.wasm -O3 -o benchmark.wasm
+RUN /wasm-opt wizer.benchmark.wasm -O3 -o wizer.benchmark.wasm

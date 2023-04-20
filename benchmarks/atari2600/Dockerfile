@@ -6,5 +6,5 @@ WORKDIR /atari2600-wasm
 COPY package.json package.json
 COPY index.ts assembly/index.ts
 RUN npm install
-RUN npx asc assembly/index.ts -b benchmark.wasm -O3z --debug --initialMemory 10 --use abort= --use trace=assembly/index/stubTrace
+RUN npx asc assembly/index.ts -b benchmark.wasm -O3z --initialMemory 10 --use abort= --use trace=assembly/index/stubTrace
 RUN mv benchmark.wasm /benchmark.wasm
